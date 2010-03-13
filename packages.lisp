@@ -10,6 +10,7 @@
    :copy-file
    :dump-file
    :file->list
+   :file->lines
    :make-heap
    :heap>
    :heap-pop
@@ -38,6 +39,7 @@
    :parse-date-string
    :reverse-translate-zone
    :now
+   :unix-time
    :&zone
    :date/time->utc
    :time->utc

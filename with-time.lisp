@@ -315,16 +315,16 @@ produce an unambiguous date/time string.)"
   (+ (round milliseconds 1000) epoch))
 
 (defun unix-time (&optional (utc (get-universal-time)))
-  (seconds-since-epoch utc +unix-epoch+))
+  (seconds-since-epoch utc *unix-epoch*))
 
 (defun from-unix-time (unix-seconds)
-  (epochal-seconds->lisp unix-seconds +unix-epoch+))
+  (epochal-seconds->lisp unix-seconds *unix-epoch*))
 
 (defun javascript-time (&optional (utc (get-universal-time)))
   "Javascript time is Unix time but in millisecond units."
-  (milliseconds-since-epoch utc +unix-epoch+))
+  (milliseconds-since-epoch utc *unix-epoch*))
 
 (defun from-javascript-time (javascript-time)
   "Javascript time is Unix time but in millisecond units."
-  (epochal-milliseconds->lisp javascript-time +unix-epoch+))
+  (epochal-milliseconds->lisp javascript-time *unix-epoch*))
   
