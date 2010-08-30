@@ -1,9 +1,6 @@
 ;;
-;; Copyright (c) 2005, Gigamonkeys Consulting All rights reserved.
+;; Copyright (c) 2005-2010, Peter Seibel. All rights reserved.
 ;;
-
-(defpackage :com.gigamonkeys.utilities-system (:use :cl :asdf))
-(in-package :com.gigamonkeys.utilities-system)
 
 (defsystem com.gigamonkeys.utilities
   :components

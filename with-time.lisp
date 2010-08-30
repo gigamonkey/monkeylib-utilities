@@ -222,6 +222,16 @@ produce an unambiguous date/time string.)"
 	      (multiple-value-bind (h m) (truncate (* 60 zone) 60)
 		(format s  "~2,'0@d:~2,'0d" h (abs m)))))))))
 
+(defpackage :iso (:use) (:export :|8601|))
+
+(defun iso:8601 (out arg colon-p at-sign-p &rest params)
+  (write-string (format-iso-8601-time 
+                 arg
+                 :time-zone (first params)
+                 :omit-time (and at-sign-p (not colon-p))
+                 :omit-date colon-p
+                 :omit-time-zone (and colon-p (not at-sign-p))) out))
+
 (defun parse-iso-8601-time (text)
   ;; For now parse a full time like "2009-08-05T04:28:30Z" or
   ;; "2009-08-05T05:17:40-7:00"
@@ -267,9 +277,6 @@ produce an unambiguous date/time string.)"
     (multiple-value-bind (hours minutes) (floor minutes 60)
       (format nil "~2,'0d:~2,'0d:~2,'0d" hours minutes seconds))))
 
-
-  
-
 (defun hh-mm (seconds)
   (multiple-value-bind (minutes seconds) (floor seconds 60)
     (multiple-value-bind (hours minutes) (floor minutes 60)
@@ -284,8 +291,6 @@ produce an unambiguous date/time string.)"
 	    (multiple-value-bind (centuries years) (floor years 100)
 	      (format nil "~[~:;~:*~d centur~:@p ~]~[~:;~:*~d year~:p ~]~[~:;~:*~d week~:p ~]~[~:;~:*~d day~:p ~]~[~:;~:*~d hour~:p ~]~[~:;~:*~d minute~:p ~]~[~:;~:*~d second~:p ~]"
 		      centuries years weeks days hours minutes seconds))))))))
-
-
 
 (defun parse-date-string (string)
   (apply #'date/time->utc 
@@ -327,4 +332,3 @@ produce an unambiguous date/time string.)"
 (defun from-javascript-time (javascript-time)
   "Javascript time is Unix time but in millisecond units."
   (epochal-milliseconds->lisp javascript-time *unix-epoch*))
-  
