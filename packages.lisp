@@ -40,6 +40,8 @@
    :reverse-translate-zone
    :now
    :unix-time
+   :mklist
+   :unlist
    :&zone
    :date/time->utc
    :time->utc
@@ -79,4 +81,9 @@
    :next-day
    :parse-time
    :round-to
-   :round-to-unit-fraction))
+   :round-to-unit-fraction
+
+   ;; Re-export split-sequence functions
+   :split-sequence
+   :split-sequence-if
+   :split-sequence-if-not))
