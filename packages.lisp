@@ -11,6 +11,7 @@
    :dump-file
    :file->list
    :file->lines
+   :file->sexp
    :make-heap
    :heap>
    :heap-pop
@@ -22,6 +23,7 @@
    :empty-heap
    :file-text
    :file-char-length
+   :file-bytes
    :with-time
    :with-current-time
    :with-slot-values

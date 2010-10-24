@@ -14,6 +14,9 @@
   (with-output-to-string (out)
     (dump-file pathname out)))
 
+(defun file-bytes (file)
+  (with-open-file (in file) (file-length in)))
+
 (defun file-char-length (file &key (external-format :utf-8))
   "The length of the file in characters for a given external-format."
   (with-open-file (in file :external-format external-format)
@@ -37,7 +40,14 @@
       (with-open-file (in filename)
 	(loop for item = (read in nil nil) while item collect item)))))
 
-(defmacro with-output-to-file ((out file) &body body)
-  `(with-open-file (,out ,file :direction :output :if-exists :supersede)
-     ,@body
-     (truename ,out)))
+(defun file->sexp (filename &optional (package *package*))
+  (let ((*package* package))
+    (with-open-file (in filename)
+      (read in nil nil))))
+
+(defmacro with-output-to-file ((out file &key (ensure-directories nil)) &body body)
+  (once-only (file)
+    `(with-open-file (,out (if ,ensure-directories (ensure-directories-exist ,file) ,file)
+                           :direction :output :if-exists :supersede)
+       ,@body
+       (truename ,out))))
