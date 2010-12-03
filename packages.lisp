@@ -7,6 +7,7 @@
 (defpackage :com.gigamonkeys.utilities
   (:use :cl :com.gigamonkeys.macro-utilities :split-sequence)
   (:export
+   :!
    :copy-file
    :dump-file
    :file->list
