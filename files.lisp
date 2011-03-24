@@ -24,10 +24,13 @@
        while c count t)))
 
 (defun copy-file (from to)
-  (with-open-file (out to :direction :output :if-exists :supersede :element-type 'unsigned-byte)
-    (dump-file from out))
+  (cond
+    ((and (probe-file to) (equalp (truename from) (truename to)))
+     (warn "Not copying file ~a onto itself." from))
+    (t
+     (with-open-file (out (ensure-directories-exist to) :direction :output :if-exists :supersede :element-type 'unsigned-byte)
+       (dump-file from out))))
   (truename to))
-
 
 (defun file->lines (filename)
   (when (probe-file filename)
