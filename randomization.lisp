@@ -25,4 +25,25 @@ Rudiak-Gould in comp.lang.functional, Message-ID:
 	      (push item heads)
 	      (push item tails))))))
 
+(defun random-selection (list n)
+  (let* ((rest (nthcdr n list))
+         (sample (coerce (ldiff list rest) 'vector)))
+    (loop for item in rest
+       for p from (1+ n)
+       for r = (random p)
+       when (< r n) do (setf (aref sample r) item))
+    (coerce sample 'list)))
+
+(defun test-random (n m iters)
+  (let ((h (make-hash-table :test #'equal))
+        (list (loop for i below m collect i)))
+    (loop repeat iters
+       for sample = (sort (random-selection list n) #'<)
+       do (incf (gethash sample h 0)))
+    (loop for k being the hash-keys of h using (hash-value v) do
+         (format t "~&~a => ~f" k (* 100d0 (/ v (float iters 0d0)))))))
+               
+          
+
+
 

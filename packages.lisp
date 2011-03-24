@@ -41,6 +41,7 @@
    :day-name
    :parse-date-string
    :reverse-translate-zone
+   :random-selection
    :now
    :unix-time
    :mklist
