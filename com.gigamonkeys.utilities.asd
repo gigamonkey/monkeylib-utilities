@@ -9,6 +9,7 @@
    (:file "clos" :depends-on ("packages"))
    (:file "date" :depends-on ("packages" "with-time"))
    (:file "files" :depends-on ("packages"))
+   (:file "numbers" :depends-on ("packages"))
    (:file "randomization" :depends-on ("packages"))
    #+allegro(:file "timer" :depends-on ("packages"))
    (:file "with-time" :depends-on ("packages")))
