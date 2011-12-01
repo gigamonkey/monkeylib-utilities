@@ -277,6 +277,7 @@ produce an unambiguous date/time string.)"
 
 (defun hh-mm (seconds)
   (multiple-value-bind (minutes seconds) (floor seconds 60)
+    (declare (ignore seconds))
     (multiple-value-bind (hours minutes) (floor minutes 60)
       (format nil "~2,'0d:~2,'0d" hours minutes))))
 
