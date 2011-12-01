@@ -12,7 +12,7 @@
 ;; though any transcription errors are likely my own.
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defparameter *time-zones*
-  '(;; North America 
+  '(;; North America
     (:nst -7/2 "Newfoundland Standard Time")
     (:hnt -7/2 "Heure Normale de Terre-Neuve")
     (:ndt -5/2 "Newfoundland Daylight Time")
@@ -96,7 +96,7 @@
     (:awst 8 "Australian Western Standard Time")
     (:cxt 7 "Christmas Island Time"))))
 
-(defparameter *long-month-names* 
+(defparameter *long-month-names*
   #("January"
     "February"
     "March"
@@ -121,11 +121,9 @@
 
 (defun month-name (number)
   (aref *long-month-names* (1- number)))
-  
 
 (defun day-name (number)
   (aref *day-names* number))
-
 
 (defun make-time (&rest args &key second minute hour day month year zone (defaults (get-universal-time)))
   (declare (ignore second minute hour day month year zone))
@@ -134,18 +132,18 @@
 
 ;;(defun midnight (&key day month year zone)
 ;;  (make-time :second 0 :minute 0 :hour 0 :day day :month month :year year :zone zone))
-  
+
 
 (defun merge-time (utc &key second minute hour day month year zone)
   (multiple-value-bind (utc-second
-			utc-minute
-			utc-hour
-			utc-day
-			utc-month
-			utc-year
-			utc-day-of-week
-			utc-daylight-savings-p
-			utc-zone)
+                        utc-minute
+                        utc-hour
+                        utc-day
+                        utc-month
+                        utc-year
+                        utc-day-of-week
+                        utc-daylight-savings-p
+                        utc-zone)
       (decode-universal-time utc)
     (declare (ignore utc-day-of-week))
     (encode-universal-time
@@ -169,21 +167,21 @@
   (let* ((zone-cons (member '&zone args))
          (zone (if zone-cons (cadr zone-cons)))
          (args (nconc (ldiff args zone-cons) (cddr zone-cons)))
-	 (gensymed-vars ()))
+         (gensymed-vars ()))
     (when (find zone *time-zones* :key #'first)
       (setf zone (- (second (find zone *time-zones* :key #'first)))))
     (labels ((part-name (spec)
                (if (symbolp spec) spec (first spec)))
              (var-name (spec)
                (if (symbolp spec) spec (second spec)))
-	     (make-gensym () (first (push (gensym) gensymed-vars)))
+             (make-gensym () (first (push (gensym) gensymed-vars)))
              (find-var (name)
-	       (let ((name (find name args :key #'part-name :test #'string=)))
-		 (if name (var-name name) (make-gensym)))))
+               (let ((name (find name args :key #'part-name :test #'string=)))
+                 (if name (var-name name) (make-gensym)))))
       (let ((vars (mapcar #'find-var '(second minute hour date month year day daylight-p zone))))
-        `(multiple-value-bind ,vars ,(if zone 
-				      `(decode-universal-time ,utc ,zone)
-				      `(decode-universal-time ,utc))
+        `(multiple-value-bind ,vars ,(if zone
+                                      `(decode-universal-time ,utc ,zone)
+                                      `(decode-universal-time ,utc))
            (declare (ignore ,@gensymed-vars))
            ,@body)))))
 
@@ -203,29 +201,29 @@ altogether it is better to pass an explicit time-zone argument of
 produce an unambiguous date/time string.)"
   (multiple-value-bind (second minute hour day month year day-of-week daylight-savings-p zone)
       (etypecase time-zone
-	(number  (decode-universal-time time-value (- time-zone)))
-	(keyword (decode-universal-time time-value (lisp-time-zone time-zone)))
-	(null    (decode-universal-time time-value)))
+        (number  (decode-universal-time time-value (- time-zone)))
+        (keyword (decode-universal-time time-value (lisp-time-zone time-zone)))
+        (null    (decode-universal-time time-value)))
     (declare (ignore day-of-week))
     (when daylight-savings-p (decf zone))
     (setf zone (- zone))
     (with-output-to-string (s)
       (unless omit-date
-	(format s "~4,'0d-~2,'0d-~2,'0d"  year month day))
+        (format s "~4,'0d-~2,'0d-~2,'0d"  year month day))
       (unless (or omit-date omit-time)
-	(write-char #\T s))
-      (unless omit-time 
-	(format s "~2,'0d:~2,'0d:~2,'0d" hour minute second)
-	(unless omit-time-zone
-	  (if (zerop zone)
-	      (princ #\Z s)
-	      (multiple-value-bind (h m) (truncate (* 60 zone) 60)
-		(format s  "~2,'0@d:~2,'0d" h (abs m)))))))))
+        (write-char #\T s))
+      (unless omit-time
+        (format s "~2,'0d:~2,'0d:~2,'0d" hour minute second)
+        (unless omit-time-zone
+          (if (zerop zone)
+              (princ #\Z s)
+              (multiple-value-bind (h m) (truncate (* 60 zone) 60)
+                (format s  "~2,'0@d:~2,'0d" h (abs m)))))))))
 
 (defpackage :iso (:use) (:export :|8601|))
 
 (defun iso:8601 (out arg colon-p at-sign-p &rest params)
-  (write-string (format-iso-8601-time 
+  (write-string (format-iso-8601-time
                  arg
                  :time-zone (first params)
                  :omit-time (and at-sign-p (not colon-p))
@@ -236,26 +234,26 @@ produce an unambiguous date/time string.)"
   ;; For now parse a full time like "2009-08-05T04:28:30Z" or
   ;; "2009-08-05T05:17:40-7:00"
   (flet ((int (start &optional end)
-	   (parse-integer (subseq text start end))))
+           (parse-integer (subseq text start end))))
     (let ((year (int 0 4))
-	  (month (int 5 7))
-	  (day (int 8 10))
-	  (hour (int 11 13))
-	  (minute (int 14 16))
-	  (second (int 17 19))
-	  (timezone (subseq text 19)))
+          (month (int 5 7))
+          (day (int 8 10))
+          (hour (int 11 13))
+          (minute (int 14 16))
+          (second (int 17 19))
+          (timezone (subseq text 19)))
       (cond
-	((string= timezone "Z")
-	 (setf timezone 0))
-	(t
-	 (let ((colon (position #\: timezone)))
-	   (let ((tz-sign (if (string= (subseq timezone 0 1) "-") 1 -1))
-		 (tz-hours (parse-integer (subseq timezone 1 colon)))
-		 (tz-minutes (parse-integer (subseq timezone (1+ colon)))))
-	     (setf timezone (* tz-sign (+ tz-hours (/ tz-minutes 60))))))))
+        ((string= timezone "Z")
+         (setf timezone 0))
+        (t
+         (let ((colon (position #\: timezone)))
+           (let ((tz-sign (if (string= (subseq timezone 0 1) "-") 1 -1))
+                 (tz-hours (parse-integer (subseq timezone 1 colon)))
+                 (tz-minutes (parse-integer (subseq timezone (1+ colon)))))
+             (setf timezone (* tz-sign (+ tz-hours (/ tz-minutes 60))))))))
       (encode-universal-time second minute hour day month year timezone))))
 
-  
+
 
 (defun iso-8601-time-zone (name)
   (find name *time-zones* :key #'first))
@@ -286,18 +284,18 @@ produce an unambiguous date/time string.)"
   (multiple-value-bind (minutes seconds) (floor seconds 60)
     (multiple-value-bind (hours minutes) (floor minutes 60)
       (multiple-value-bind (days hours) (floor hours 24)
-	(multiple-value-bind (weeks days) (floor days 7)
-	  (multiple-value-bind (years weeks) (floor weeks 52)
-	    (multiple-value-bind (centuries years) (floor years 100)
-	      (format nil "~[~:;~:*~d centur~:@p ~]~[~:;~:*~d year~:p ~]~[~:;~:*~d week~:p ~]~[~:;~:*~d day~:p ~]~[~:;~:*~d hour~:p ~]~[~:;~:*~d minute~:p ~]~[~:;~:*~d second~:p ~]"
-		      centuries years weeks days hours minutes seconds))))))))
+        (multiple-value-bind (weeks days) (floor days 7)
+          (multiple-value-bind (years weeks) (floor weeks 52)
+            (multiple-value-bind (centuries years) (floor years 100)
+              (format nil "~[~:;~:*~d centur~:@p ~]~[~:;~:*~d year~:p ~]~[~:;~:*~d week~:p ~]~[~:;~:*~d day~:p ~]~[~:;~:*~d hour~:p ~]~[~:;~:*~d minute~:p ~]~[~:;~:*~d second~:p ~]"
+                      centuries years weeks days hours minutes seconds))))))))
 
 (defun parse-date-string (string)
-  (apply #'date/time->utc 
-	 (loop for start = 0 then (1+ dash)
-	    for dash = (position #\- string :start start)
-	    collect (parse-integer (subseq string start dash))
-	    while dash)))
+  (apply #'date/time->utc
+         (loop for start = 0 then (1+ dash)
+            for dash = (position #\- string :start start)
+            collect (parse-integer (subseq string start dash))
+            while dash)))
 
 (defun weekday-p (time)
   (with-time (day) time (< day 5)))
