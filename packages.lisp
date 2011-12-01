@@ -29,6 +29,9 @@
    :with-current-time
    :with-slot-values
    :with-output-to-file
+   :with-data-io-syntax
+   :with-data-to-file
+   :with-lock-file
    :weekday-p
    :lisp-time-zone
    :iso-8601-time-zone
