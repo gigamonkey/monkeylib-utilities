@@ -10,6 +10,7 @@
    (:file "clos" :depends-on ("packages"))
    (:file "date" :depends-on ("packages" "with-time"))
    (:file "files" :depends-on ("packages"))
+   (:file "lists" :depends-on ("packages"))
    (:file "numbers" :depends-on ("packages"))
    (:file "math" :depends-on ("packages"))
    (:file "randomization" :depends-on ("packages"))
