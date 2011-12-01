@@ -14,4 +14,26 @@
      for (first . rest) on list
      when (or (not rest) (not (funcall test (funcall key first) (funcall key (first rest))))) collect (cons first count) and do (setf count 1)
      else do (incf count)))
-     
+
+(defmacro destructuring-data ((&rest tree) thing &body body)
+  "Destructure a list as with DESTRUCTURING-BIND except anywhere in
+  the pattern that a keyword appears, the same keyword must appear in
+  the data."
+  (multiple-value-bind (pattern keywords) (destructuring-pattern tree)
+    `(destructuring-bind (,@pattern) ,thing
+       ,@(loop for (var . value) in keywords collect
+              `(unless (eql ,var ,value)
+                 (error "Expected ~a; got ~a" ,value ,var)))
+       ,@body)))
+
+(defun destructuring-pattern (pattern)
+  (let ((keywords ()))
+    (labels ((walk (x)
+               (typecase x
+                 (keyword
+                  (let ((var (gensym)))
+                    (push (cons var x) keywords)
+                    var))
+                 (symbol x)
+                 (cons (cons (walk (car x)) (walk (cdr x)))))))
+      (values (walk pattern) keywords))))
