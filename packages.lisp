@@ -1,11 +1,15 @@
 ;;
-;; Copyright (c) 2005, Gigamonkeys Consulting All rights reserved.
+;; Copyright (c) 2005-2012 Gigamonkeys Consulting All rights reserved.
 ;;
 
 (in-package :cl-user)
 
 (defpackage :com.gigamonkeys.utilities
-  (:use :cl :com.gigamonkeys.macro-utilities :split-sequence)
+  (:use :cl :split-sequence :alexandria)
+  ;; These are also defined in alexandria. At some point should use
+  ;; theirs but they aren't exactly the same so that requires finding
+  ;; all the places I use them.
+  (:shadow :copy-file :with-output-to-file)
   (:export
    :!
    :copy-file
@@ -90,8 +94,8 @@
    :parse-time
    :round-to
    :round-to-unit-fraction
+   :keywordize)
 
-   ;; Re-export split-sequence functions
-   :split-sequence
-   :split-sequence-if
-   :split-sequence-if-not))
+  ;; Re-export inherited symbols -- too lazy to type them all.
+  (:export . #.(loop for sym being the external-symbols of :split-sequence collect sym))
+  (:export . #.(loop for sym being the external-symbols of :alexandria collect sym)))

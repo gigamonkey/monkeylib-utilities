@@ -174,10 +174,10 @@
                (if (symbolp spec) spec (first spec)))
              (var-name (spec)
                (if (symbolp spec) spec (second spec)))
-             (make-gensym () (first (push (gensym) gensymed-vars)))
+             (new-gensym () (first (push (gensym) gensymed-vars)))
              (find-var (name)
                (let ((name (find name args :key #'part-name :test #'string=)))
-                 (if name (var-name name) (make-gensym)))))
+                 (if name (var-name name) (new-gensym)))))
       (let ((vars (mapcar #'find-var '(second minute hour date month year day daylight-p zone))))
         `(multiple-value-bind ,vars ,(if zone
                                       `(decode-universal-time ,utc ,zone)
